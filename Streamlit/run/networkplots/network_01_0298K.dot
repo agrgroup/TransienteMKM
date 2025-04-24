@@ -1,0 +1,34 @@
+strict digraph G {
+	layout=dot
+	rotate=0
+	ratio=1
+	rankdir=TB
+	"CO*" -> "CO" [label="0.00e+00 [1.93e+08 | 1.93e+08 ]",fontname="monospace",penwidth=1,color=black];
+	"CO*" -> "*" [label="0.00e+00 [1.93e+08 | 1.93e+08 ]",fontname="monospace",penwidth=1,color=black];
+	"COCO*" -> "CO*" [label="0.00e+00 [9.51e+01 | 9.51e+01 ]",fontname="monospace",penwidth=1,color=black];
+	"COCO*" -> "CO*" [label="0.00e+00 [9.51e+01 | 9.51e+01 ]",fontname="monospace",penwidth=1,color=black];
+	"CHO*" -> "CO*" [label="0.00e+00 [5.84e-03 | 5.84e-03 ]",fontname="monospace",penwidth=1,color=black];
+	"OH" -> "CO*" [label="0.00e+00 [5.84e-03 | 5.84e-03 ]",fontname="monospace",penwidth=1,color=black];
+	"CHO*" -> "H2O" [label="0.00e+00 [5.84e-03 | 5.84e-03 ]",fontname="monospace",penwidth=1,color=black];
+	"OH" -> "H2O" [label="0.00e+00 [5.84e-03 | 5.84e-03 ]",fontname="monospace",penwidth=1,color=black];
+	"H2O" -> "H2O*" [label="2.04e-01 [5.33e+09 | 5.33e+09 ]",fontname="monospace",penwidth=3,color=crimson];
+	"*" -> "H2O*" [label="2.04e-01 [5.33e+09 | 5.33e+09 ]",fontname="monospace",penwidth=3,color=crimson];
+	"H2O*" -> "H*" [label="2.04e-01 [2.04e-01 | 1.57e-08 ]",fontname="monospace",penwidth=3,color=crimson];
+	"H2O*" -> "OH" [label="2.04e-01 [2.04e-01 | 1.57e-08 ]",fontname="monospace",penwidth=3,color=crimson];
+	"H2O" -> "H2" [label="2.04e-01 [2.04e-01 | 0.00e+00 ]",fontname="monospace",penwidth=3,color=crimson];
+	"H2O" -> "OH" [label="2.04e-01 [2.04e-01 | 0.00e+00 ]",fontname="monospace",penwidth=3,color=crimson];
+	"H2O" -> "*" [label="2.04e-01 [2.04e-01 | 0.00e+00 ]",fontname="monospace",penwidth=3,color=crimson];
+	"H*" -> "H2" [label="2.04e-01 [2.04e-01 | 0.00e+00 ]",fontname="monospace",penwidth=3,color=crimson];
+	"H*" -> "OH" [label="2.04e-01 [2.04e-01 | 0.00e+00 ]",fontname="monospace",penwidth=3,color=crimson];
+	"H*" -> "*" [label="2.04e-01 [2.04e-01 | 0.00e+00 ]",fontname="monospace",penwidth=3,color=crimson];
+	"CO"[fontname="monospace",shape=hexagon,label="CO\n0.0147757",fillcolor=black,style=filled,fontcolor=white];
+	"H*"[fontname="monospace",shape=hexagon,label="H*\n0.059086"];
+	"CO*"[fontname="monospace",shape=hexagon,label="CO*\n0.937932"];
+	"*"[fontname="monospace",shape=hexagon,label="*\n0.00210253"];
+	"COCO*"[fontname="monospace",shape=hexagon,label="COCO*\n6.35436e-06"];
+	"CHO*"[fontname="monospace",shape=hexagon,label="CHO*\n7.4118e-06"];
+	"OH"[fontname="monospace",shape=hexagon,label="OH\n1.77326e-09",fillcolor=black,style=filled,fontcolor=white];
+	"H2O"[fontname="monospace",shape=hexagon,label="H2O\n0.985224",fillcolor=black,style=filled,fontcolor=white];
+	"H2O*"[fontname="monospace",shape=hexagon,label="H2O*\n0.000859029"];
+	"H2"[fontname="monospace",shape=hexagon,label="H2\n0",fillcolor=black,style=filled,fontcolor=white];
+}

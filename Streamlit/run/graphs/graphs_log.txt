@@ -1,0 +1,25 @@
+Writing run/graphs/pdf/potentials/-0.6V/coverage_bar.pdf
+Writing run/graphs/png/potentials/-0.6V/coverage_bar.png
+Writing run/graphs/pdf/potentials/-0.6V/coverage_line.pdf
+Writing run/graphs/png/potentials/-0.6V/coverage_line.png
+Writing run/graphs/pdf/potentials/-0.6V/derivatives.pdf
+Writing run/graphs/png/potentials/-0.6V/derivatives.png
+Writing run/graphs/pdf/coverage_bar.pdf
+Writing run/graphs/png/coverage_bar.png
+Writing run/graphs/pdf/coverage_line.pdf
+Less than 4 datapoints; reverting to simple line
+Writing run/graphs/pdf/coverage_line.pdf
+Writing run/graphs/png/coverage_line.png
+Writing run/graphs/data/derivative.txt
+Writing run/graphs/pdf/derivative.pdf
+Less than 4 datapoints; reverting to simple line
+Writing run/graphs/pdf/derivative.pdf
+Writing run/graphs/png/derivative.png
+Writing run/graphs/pdf/butler_volmer.pdf
+Less than 4 datapoints; reverting to simple line
+Writing run/graphs/pdf/butler_volmer.pdf
+Writing run/graphs/png/butler_volmer.png
+Writing run/graphs/pdf/rates.pdf
+Less than 4 datapoints; reverting to simple line
+Writing run/graphs/pdf/rates.pdf
+Writing run/graphs/png/rates.png
