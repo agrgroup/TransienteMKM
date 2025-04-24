@@ -124,7 +124,7 @@ For local use. If deploying to a server or cloud, ensure writable permissions in
 
 ## ✍️ Authors
 
-Developed by [AGR Group @ IISc](https://agrgroup.org/)
+Developed by [AGR Group@IISc](https://agrgroup.org/)
 
 Feel free to customize or extend the application.
 
