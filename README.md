@@ -138,10 +138,10 @@ Feel free to customize or extend the application.
 If you use this application in your work, please cite the following:
 
 **Publication Title:** *Transient Microkinetic Modeling of Electrochemical Reactions: Capturing Unsteady Dynamics of CO Reduction and Oxygen Evolution*  
-**Authors:** [Shivam Chaturvedi, Amar Deep Pathak, Nishant Sinha, Ananth Govind Rajan]  
-**Journal / Conference:** []  
+**Authors:** Shivam Chaturvedi, Amar Deep Pathak, Nishant Sinha, Ananth Govind Rajan 
+**Journal / Conference:**  
 **Year:** 202X  
-**DOI:** [])
+**DOI:** )
 
 ```bibtex
 @article{yourcitation202X,
