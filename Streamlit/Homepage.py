@@ -1,10 +1,19 @@
 import streamlit as st
 import pandas as pd
 import os
-from utility import *
-from graph_helper import *
+import subprocess
+import numpy as np
+import networkx as nx
 import zipfile
-import shutil
+from graph_helper import create_reaction_network_visualization, parse_dot_file, extract_reactions, find_rds
+from utility import * 
+from inp_file_gen import inp_file_gen
+from mkm_parameters import *
+import zipfile
+
+DOT_FILE_PATH = "run/networkplots/network_01_0298K.dot"
+RESULT_FOLDER = "run/"
+ZIP_OUTPUT_PATH = "single_run_run.zip"
 
 
 st.set_page_config(
@@ -12,157 +21,204 @@ st.set_page_config(
     page_icon="👋",
 )
 
-# Title of the Streamlit app
-st.title('e-MKM Input File Generator and Solver')
+st.title('MKM Input File Generator and Solver')
 
+# Function to run the mkmcxx solver
+def run_executable(input_file):
+    executable_path = os.path.join(os.path.dirname(__file__), 'bin', 'mkmcxx.exe')
+    st.write(f"Using Executable: {executable_path}")
 
-def zip_folder(folder_path, output_zip_path):
-    """Compress a folder into a zip file."""
-    with zipfile.ZipFile(output_zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
-        for root, dirs, files in os.walk(folder_path):
-            for file in files:
-                file_path = os.path.join(root, file)
-                arcname = os.path.relpath(file_path, start=folder_path)
-                zipf.write(file_path, arcname)
+    if os.path.exists(executable_path):
+        try:
+            result = subprocess.run([executable_path, '-i', input_file],
+                                    capture_output=True, text=True)
+            st.write("Solver Output (stdout):")
+            st.text(result.stdout)
+            if result.stderr:
+                st.write("Solver Error Output (stderr):")
+                st.text(result.stderr)
+            return ("Solver ran successfully!" if result.returncode == 0 else f"Error running solver: {result.stderr}", result.returncode == 0)
+        except Exception as e:
+            return (f"Execution error: {str(e)}", False)
+    else:
+        return (f"Executable not found: {executable_path}", False)
 
+# Parse coverage.dat
+def get_coverage_values(cov_path):
+    with open(cov_path) as file:
+        lines = file.readlines()
+    adsorbate_keys = lines[0].strip().split()
+    data = {key: [] for key in adsorbate_keys}
+    for line in lines[1:]:
+        values = list(map(float, line.strip().split()))
+        for i, key in enumerate(adsorbate_keys):
+            data[key].append(values[i])
+    return data
 
+def show_coverage():
+    path = "run/range/coverage.dat"
+    if os.path.exists(path):
+        covs = get_coverage_values(path)
+        relevant = {k: v for k, v in covs.items() if '*' in k}
+        df = pd.DataFrame(relevant).T.reset_index()
+        df.columns = ['Adsorbates', 'Coverage']
+        st.write("Coverage Data:")
+        st.dataframe(df)
+    else:
+        st.error("coverage.dat file not found.")
+
+# Main app logic
 def main():
-    if "uploaded_file" not in st.session_state:
-        st.session_state["uploaded_file"] = ""
-
-    # Upload Excel file
     uploaded_file = st.file_uploader("Upload Excel File", type="xlsx")
-    
     if uploaded_file:
         try:
-            data = pd.read_excel(uploaded_file)
-            st.write("Data Loaded Successfully!")
+            df_rxn = pd.read_excel(uploaded_file, sheet_name="Reactions")
+            df_env = pd.read_excel(uploaded_file, sheet_name="Local Environment")
+            df_io = pd.read_excel(uploaded_file, sheet_name="Input-Output Species")
         except Exception as e:
-            st.error(f"Error Loading Data: {str(e)}")
+            st.error(f"Failed to read sheets: {e}")
             return
-        try:
-            data1 = pd.read_excel(uploaded_file, sheet_name="Reactions")
-            st.write("Reactions Loaded Successfully!")
-            df1 = data1
-            st.write("Reactions Preview:", df1.head())
-        except Exception as e:
-            st.error(f"Error reading Reactions sheet: {str(e)}")
-            return
-        
-        try:
-            data2 = pd.read_excel(uploaded_file, sheet_name="Local Environment")
-            st.write("Local Environment Loaded Successfully!")
-            df2 = data2
-            st.write("Local Environment Preview:", df2.head())
-        except Exception as e:
-            st.error(f"Error reading Local Environment sheet: {str(e)}")
-            return
-        
-        try:
-            data3 = pd.read_excel(uploaded_file, sheet_name="Input-Output Species")
-            st.write("Input-output Loaded Successfully!")
-            df3 = data3
-            st.write("Input-output Preview:", df3.head())
-        except Exception as e:
-            st.error(f"Error reading Input-output sheet: {str(e)}")
-            return
-        
-        # Generate Input File Button
-        if st.button("Generate MKM Input"):
-            try:
-                # Call the function to generate the input file
-                input_file_path = inp_file_gen(uploaded_file)
-                st.success("Input file generated successfully!")
 
-                # After generating the file, allow the user to download it
-                with open(input_file_path, "rb") as file:
-                    st.download_button(
-                        label="Download Generated MKM Input ",
-                        data=file,
-                        file_name="input_file.mkm",
-                        mime="application/octet-stream"
-                    )
-            except Exception as e:
-                st.error(f"Error generating input file: {str(e)}")
+        required_rxn_cols = {"Reactions", "G_f", "G_b"}
+        required_env_cols = {"pH", "V", "Pressure"}
+        required_io_cols = {"Species", "Concentration"}
 
-        input_file_path = "single_run/input_file.mkm"
-        # Run Solver Button
+        if not required_rxn_cols.issubset(df_rxn.columns):
+            st.error("Missing required columns in 'Reactions' sheet.")
+            return
+        if not required_env_cols.issubset(df_env.columns):
+            st.error("Missing required columns in 'Local Environment' sheet.")
+            return
+        if not required_io_cols.issubset(df_io.columns):
+            st.error("Missing required columns in 'Input-Output Species' sheet.")
+            return
+
+        st.success("Excel data loaded successfully.")
+
+        # Display data
+        st.subheader("Reactions Preview")
+        st.dataframe(df_rxn.head())
+        st.subheader("Local Environment Preview")
+        st.dataframe(df_env.head())
+        st.subheader("Input-Output Species Preview")
+        st.dataframe(df_io.head())
+
+        # Extract values
+        pH_list = df_env["pH"].tolist()
+        V_list = df_env["V"].tolist()
+        P = df_env["Pressure"].iloc[0]
+        gases = df_io["Species"].tolist()
+        concentrations = df_io["Concentration"].tolist()
+        rxn = df_rxn["Reactions"]
+        Ea = df_rxn["G_f"]
+        Eb = df_rxn["G_b"]
+        Temp = df_env.get("Temperature", pd.Series([298])).iloc[0]
+        Time = df_env.get("Time", pd.Series([1e3])).iloc[0]
+        Abstol = df_env.get("Abstol", pd.Series([1e-12])).iloc[0]
+        Reltol = df_env.get("Reltol", pd.Series([1e-6])).iloc[0]
+
+        # Parse reactions
+        Reactant1, Reactant2, Reactant3 = [], [], []
+        Product1, Product2, Product3 = [], [], []
+        adsorbates = set()
+
+        for r in rxn:
+            lhs, rhs = map(str.strip, r.split("→"))
+            reactants = [f"{{{x.strip()}}}" for x in lhs.split("+")]
+            products = [f"{{{x.strip()}}}" for x in rhs.split("+")]
+            reactants += [""] * (3 - len(reactants))
+            products += [""] * (3 - len(products))
+            Reactant1.append(reactants[0])
+            Reactant2.append(reactants[1])
+            Reactant3.append(reactants[2])
+            Product1.append(products[0])
+            Product2.append(products[1])
+            Product3.append(products[2])
+            for item in reactants + products:
+                clean = item.strip("{}")
+                if "*" in clean and clean != "*":
+                    adsorbates.add(clean)
+
+        adsorbates = list(adsorbates)
+        activity = np.zeros(len(adsorbates))
+
+        # Generate input file
+        try:
+            inp_file_gen(rxn, pH_list, V_list, gases, concentrations, adsorbates, activity,
+                         Reactant1, Reactant2, Reactant3, Product1, Product2, Product3,
+                         Ea, Eb, P, Temp, Time, Abstol, Reltol)
+            st.success("Input file generated.")
+        except Exception as e:
+            st.error(f"Failed to generate input file: {e}")
+            return
+
+        # Run solver
+        input_file_path = 'input_file.mkm'
         if st.button("Run Solver"):
-        
             result_message, success = run_executable(input_file_path)
+            (st.success if success else st.error)(result_message)
             if success:
-                st.success(result_message)
-                coverage()
-            else:
-                st.error(result_message)
-        dot_file_path = "run/networkplots/network_01_0298K.dot"
-        
+                show_coverage()
+
+                    # Reaction Network Visualization
         if st.button("Create Reaction Network Visualization"):
-            if os.path.exists(dot_file_path):
-                graph = create_reaction_network_visualization(dot_file=dot_file_path)
+            if os.path.exists(DOT_FILE_PATH):
+                graph = create_reaction_network_visualization(dot_file=DOT_FILE_PATH)
                 if graph:
                     graph_svg = graph.pipe(format='svg').decode('utf-8')
                     st.image(graph_svg)
+                    st.download_button(
+                        label="Download Reaction Network (SVG)",
+                        data=graph.pipe(format='svg'),
+                        file_name="reaction_network.svg",
+                        mime="image/svg+xml"
+                    )
                 else:
-                        st.error("Failed to create the graph. Please check the DOT file content.")
+                    st.error("Failed to create graph from DOT file.")
             else:
-                   st.error("The specified file does not exist. Please check the file path.")         
+                st.error("DOT file not found.")
 
-
-
-
+        # Find Rate Determining Step (RDS)
         if st.button("Find RDS"):
-            if os.path.exists(dot_file_path):  
-                intermediates, reactants, products = parse_dot_file(dot_file_path)
-                graph = extract_reactions(dot_file_path)
+            if os.path.exists(DOT_FILE_PATH):
+                intermediates, reactants, products = parse_dot_file(DOT_FILE_PATH)
+                graph = extract_reactions(DOT_FILE_PATH)
                 st.header("Reactant-Product Pairs and their RDS")
 
                 for reactant in reactants:
                     for product in products:
                         path, rds = find_rds(graph, reactant, product)
                         if path:
-                            st.subheader(f"Reactant: {reactant},Product: {product}")
+                            st.subheader(f"Reactant: {reactant}, Product: {product}")
                             st.write(f"Path: {' -> '.join(path)}")
                             if rds:
-                                st.write(f"RDS: {rds[0]} -> {rds[1]}")  
+                                st.write(f"RDS: {rds[0]} -> {rds[1]}")
                                 rate = next(rate for n, rate in graph[rds[0]] if n == rds[1])
                                 if rate == 0:
-                                    st.write("RDS: No RDS")
+                                    st.info("RDS: No RDS (rate = 0)")
                                 else:
-                                    st.write(f"Rate: {rate:.3e}") 
-                            else:     
-                                st.write("No RDS (all rates are zero)")
+                                    st.write(f"Rate: {rate:.3e}")
+                            else:
+                                st.warning("No RDS (all rates are zero)")
                         else:
-                            st.write(f"No path from {reactant} to {product}") 
-                        st.write("---")  # Add a separator between each pair           
-                                
-
-
+                            st.warning(f"No path from {reactant} to {product}")
+                        st.markdown("---")
             else:
-                st.error("Network file not found")      
+                st.error("Network file not found.")
 
-
-                # Download Folder Button
-        folder_to_download = "run/"
-        zip_output_path = "single_run_run.zip" 
-
-        if os.path.exists(folder_to_download):
-            # Compress the folder into a .zip file
-            zip_folder(folder_to_download, zip_output_path)  
-
-         # Provide a download button for the .zip file
-            with open(zip_output_path, "rb") as zip_file:
-                btn = st.download_button(
+        # Download simulation results
+        if os.path.exists(RESULT_FOLDER):
+            zip_folder(RESULT_FOLDER, ZIP_OUTPUT_PATH)
+            with open(ZIP_OUTPUT_PATH, "rb") as zip_file:
+                st.download_button(
                     label="Download Simulation Results (run/)",
                     data=zip_file,
                     file_name="simulation_results.zip",
                     mime="application/zip"
                 )
         else:
-            st.warning(f"The folder '{folder_to_download}' does not exist.")         
-
-        
-                       
+            st.warning(f"The folder '{RESULT_FOLDER}' does not exist.")
+    
 
 if __name__ == "__main__":
     main()

@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import os
 import subprocess
-
+import zipfile
 from dependencies import *
 from inp_file import *
 from mkm_parameters import *
@@ -128,3 +128,11 @@ def plot_coverage_data(pH_list, V_list):
         st.pyplot(fig)
     else:
         st.error("No coverage data available for the given pH and V combinations.")
+
+def zip_folder(folder_path, output_path):
+    with zipfile.ZipFile(output_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
+        for root, dirs, files in os.walk(folder_path):
+            for file in files:
+                full_path = os.path.join(root, file)
+                arcname = os.path.relpath(full_path, start=folder_path)
+                zipf.write(full_path, arcname)

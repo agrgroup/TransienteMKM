@@ -1,6 +1,7 @@
 import os
 def inp_file_gen(rxn,pH_list, V_list, gases, concentrations, adsorbates, activity, Reactant1, Reactant2, Reactant3, Product1, Product2, Product3, Ea, Eb, P, Temp, Time, Abstol, Reltol):
-        inp_file = open('input_file.mkm','w')
+        #path=os.path.join(children_folder,'input_file.mkm')
+        inp_file = open("input_file.mkm",'w')
         inp_file.write('&compounds\n\n')
         inp_file.write("#gas-phase compounds\n\n#Name; isSite; concentration\n\n")
         for compound,concentration in zip(gases,concentrations):
@@ -31,11 +32,21 @@ def inp_file_gen(rxn,pH_list, V_list, gases, concentrations, adsorbates, activit
                 line = "AR; {:<15} {:<17} => {:<15}{:<23};{:<10.2e} ;  {:<10.2e} ;  {:<10} ;  {:<10} \n".format(Reactant1[j],"",Product1[j],"",pre_exp, pre_exp, Ea[j],Eb[j] )
             
             inp_file.write(line)    
+        # Write settings
         inp_file.write("\n\n&settings\nTYPE = SEQUENCERUN\nPRESSURE = {}".format(P))
         inp_file.write("\nPOTAXIS=1\nDEBUG=0\nNETWORK_RATES=1\nNETWORK_FLUX=1\nUSETIMESTAMP=0")
+
+        # Write run parameters
         inp_file.write('\n\n&runs\n')
         inp_file.write("# Temp; Potential;Time;AbsTol;RelTol\n")
-        line2 = "{:<5};{:<5};{:<5.2e};{:<5};{:<5}".format(Temp,V_list,Time,Abstol,Reltol)
-        inp_file.write(line2)   
+
+        # Use first voltage if list
+        if isinstance(V_list, list):
+            V = V_list[0]
+        else:
+            V = V_list
+
+        line2 = "{:<5};{:<5};{:<5.2e};{:<5};{:<5}".format(Temp, V, Time, Abstol, Reltol)
+        inp_file.write(line2)
         inp_file.close()  
 

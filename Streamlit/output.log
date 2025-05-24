@@ -31,14 +31,14 @@ Performing SEQUENCERUN
 Number of runs:    1
 Number of threads: 1/16
 ----------------------
-[07:54:41.000] WARNING: [T-00_R-001] Possibly run not yet converged at 2 compounds.
+[22:03:44.000] WARNING: [T-00_R-001] Possibly run not yet converged at 3 compounds.
 <--THREAD-00_RUN-001-END	(100.0%)
 ----------------------
 Finalizing SEQUENCERUN
 
 FINALIZING SEQUENCERUN -- SUMMARY
 *********************************
-WARNING - POSSIBLY NOT YET CONVERGED ON RUN 1: T=298; t=1e+15; AbsTol=1e-20; RelTol=1e-10
+WARNING - POSSIBLY NOT YET CONVERGED ON RUN 1: T=298; t=1000; AbsTol=1e-12; RelTol=1e-06
 
 *********************************
 Calculating production patterns
@@ -58,5 +58,5 @@ Writing graphs per single_x
 Writing range graphs
 *********************************
 
-Total execution time: 345.839 ms.
+Total execution time: 350.284 ms.
 

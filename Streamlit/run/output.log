@@ -31,19 +31,14 @@ Performing SEQUENCERUN
 Number of runs:    1
 Number of threads: 1/16
 ----------------------
+[20:11:26.000] WARNING: [T-00_R-001] Possibly run not yet converged at 2 compounds.
 <--THREAD-00_RUN-001-END	(100.0%)
 ----------------------
 Finalizing SEQUENCERUN
 
 FINALIZING SEQUENCERUN -- SUMMARY
 *********************************
-For all runs, the sum of surface components has not changed more than 2.4424906542e-13%
-
-For all runs, no surface concentrations were found lower than -1.1060164278e-57
-
-For all runs, no absolute surface differentials were found higher than 1.5280721848e-43 (at 2.9800000000e+02K)
-
-For all runs, no relative surface differentials were found higher than 0.0000000000e+00 (at 0.0000000000e+00K)
+WARNING - POSSIBLY NOT YET CONVERGED ON RUN 1: T=298; t=1e+15; AbsTol=1e-20; RelTol=1e-10
 
 *********************************
 Calculating production patterns
@@ -63,5 +58,5 @@ Writing graphs per single_x
 Writing range graphs
 *********************************
 
-Total execution time: 439.886 ms.
+Total execution time: 391.855 ms.
 
