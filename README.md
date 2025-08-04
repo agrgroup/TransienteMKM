@@ -122,12 +122,9 @@ The app leverages the following helper functions (defined in `utility.py`, `grap
 
 For local use. If deploying to a server or cloud, ensure writable permissions in the working directory.
 
-## 📦 Data availability  
-Complete data require to generate figures in the manuscrpt can be accessed via the below link: [Transient eMKM Data](https://zenodo.org/records/15276136?token=eyJhbGciOiJIUzUxMiJ9.eyJpZCI6IjhiNmExM2ZjLWNiMWMtNGMwYy05ZjM3LWFlZjYxZTE3ZDQ1NiIsImRhdGEiOnt9LCJyYW5kb20iOiI4ZWZkN2UwZGJiMGU5NzdiNTlkY2VjMmE3YzNjZTc5ZiJ9.B4R33Ot1SnGj-IHmxDaJwKdZF8nq09jIfT0rL1kCkankHjW52010FuXMGoDjaELc0dc39Cn8fxqVSVb7qWMV9Q)
-
 ## ✍️ Authors
 
-Developed by [AGR Group@IISc](https://agrgroup.org/)
+Developed by [AGR Group @ IISc](https://agrgroup.org/)
 
 Feel free to customize or extend the application.
 
@@ -145,11 +142,12 @@ If you use this application in your work, please cite the following:
 
 ```bibtex
 
-@article{yourcitation202X,
+@article{chaturvedi2025transient,
   title={Transient Microkinetic Modeling of Electrochemical Reactions: Capturing Unsteady Dynamics of CO Reduction and Oxygen Evolution},
-  author={Shivam Chaturvedi, Amar Deep Pathak, Nishant Sinha, Ananth Govind Rajan},
-  journal={},
-  year={202X},
-  publisher={},
-  doi={}
+  author={Chaturvedi, Shivam and Pathak, Amar Deep and Sinha, Nishant and Rajan, Ananth Govind},
+  journal={ChemRxiv},
+  year={2025},
+  publisher={ChemRxiv},
+  doi={10.26434/chemrxiv-2025-rggk3}
 }
+
