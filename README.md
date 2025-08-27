@@ -64,6 +64,9 @@ temperature: 298
 time: 100000.0
 abstol: 1.0e-20
 reltol: 1.0e-10
+enable_sweep_mode: true
+sweep_rate: 0.1  (V/sec)
+use_coverage_propagation: true
 
 # Paths
 input_excel_path: "input.xlsx"
