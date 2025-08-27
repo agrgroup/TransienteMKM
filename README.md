@@ -7,7 +7,7 @@ This Streamlit-based application provides a graphical interface for generating i
 ## 📁 **File Structure**
 
 ```
-microkinetic_modeling/
+TransienteMKM/
 ├── main_application.py      # Main entry point with CLI
 ├── config.py               # Configuration management (YAML/JSON)
 ├── data_extraction.py      # Excel data processing (FIXED)
