@@ -1,7 +1,7 @@
 # Microkinetic Modeling Configuration
 
 # pH and potential ranges for parameter sweep
-pH_list: [7, 10, 13]
+pH_list: [7, 13]
 V_list: [0, -0.1, -0.2, -0.3, -0.4, -0.5, -0.6, -0.7, -0.8, -0.9, -1.0]
 
 # Sweep mode configuration
