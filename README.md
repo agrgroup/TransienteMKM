@@ -10,16 +10,16 @@ This Streamlit-based application provides a graphical interface for generating i
 TransienteMKM/
 ├── main_application.py      # Main entry point with CLI
 ├── config.py               # Configuration management (YAML/JSON)
-├── data_extraction.py      # Excel data processing (FIXED)
-├── simulation_runner.py    # Input file generation (FIXED)
-├── plotting.py             # Visualization (FIXED)
+├── data_extraction.py      # Excel data processing 
+├── simulation_runner.py    # Input file generation 
+├── plotting.py             # Visualization 
 ├── utilities.py            # Utility functions
 ├── dependencies_fixed.py   # All imports
 ├── example_config.yaml     # Example configuration
 ├── example_config.json     # Example configuration (JSON)
 ├── input.xlsx             # Your input data
 ├── test_setup.py          # Setup verification
-└── README.md              # This documentation
+└── README.md              #  documentation
 ```
 
 ## 🚀 **Quick Start**
