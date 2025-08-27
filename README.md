@@ -56,8 +56,8 @@ All parameters are configurable via YAML or JSON files:
 
 ```yaml
 # pH and potential ranges
-pH_list: [7, 10, 13]
-V_list: [0, -0.2, -0.4, -0.6, -0.8, -1.0]
+pH_list: [7, 13]
+V_list: [0,-0.1,-0.2,-0.3,-0.4,-0.5,-0.6,-0.7,-0.8,-0.9,-1.0]
 
 # Simulation parameters  
 temperature: 298
