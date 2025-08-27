@@ -1,8 +1,0 @@
-Number	Reaction Type  	Stoichiometry                           	Reaction orders                         	k-forward       	                                  	k-backward	     
-     1	Arrhenius      	CO + * <-> CO*                          	[CO][*] <-> [CO*]                       	6.2100000000e+12	* exp(-0.0000000000e+00/(R*T))    	6.2100000000e+12	* exp(-3.0038555964e+04/(R*T))    
-     2	Arrhenius      	CO* + CO* <-> COCO*                     	[CO*][CO*] <-> [COCO*]                  	6.2100000000e+12	* exp(-6.5605007259e+04/(R*T))    	6.2100000000e+12	* exp(-4.1586868497e+04/(R*T))    
-     3	Arrhenius      	CO* + H2O <-> CHO* + OH                 	[CO*][H2O] <-> [CHO*][OH]               	6.2100000000e+12	* exp(-6.6398389813e+04/(R*T))    	6.2100000000e+12	* exp(-7.9205579484e+03/(R*T))    
-     4	Arrhenius      	H2O + * <-> H2O*                        	[H2O][*] <-> [H2O*]                     	6.2100000000e+12	* exp(-2.1809000000e+03/(R*T))    	6.2100000000e+12	* exp(-0.0000000000e+00/(R*T))    
-     5	Arrhenius      	H2O* <-> H* + OH                        	[H2O*] <-> [H*][OH]                     	6.2100000000e+12	* exp(-4.9170207741e+04/(R*T))    	6.2100000000e+12	* exp(-8.5032154790e+04/(R*T))    
-     6	Arrhenius      	H2O + H* <-> H2 + OH + *                	[H2O][H*] <-> [H2][OH][*]               	6.2100000000e+12	* exp(-5.0303018656e+04/(R*T))    	6.2100000000e+12	* exp(-1.0000000000e+07/(R*T))    
-
