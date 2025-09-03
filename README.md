@@ -233,7 +233,7 @@ If you use this application in your work, please cite the following:
 **Authors:** [Shivam Chaturvedi, Amar Deep Pathak, Nishant Sinha, Ananth Govind Rajan]  
 **Journal:** [ChemRxiv]  
 **Year:** 2025  
-**DOI:** [10.26434/chemrxiv-2025-rggk3])
+**DOI:** [10.26434/chemrxiv-2025-rggk3-v2])
 
 ```bibtex
 
