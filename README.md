@@ -24,6 +24,8 @@ TransienteMKM/
 
 ## 🚀 **Quick Start**
 
+## Using CLI
+
 ### **1. Installation**
 ```bash
 pip install pandas numpy matplotlib openpyxl xlwings xlrd xlwt xlutils pyyaml
@@ -48,6 +50,13 @@ python main_application.py --config example_config.yaml --simulations-only
 
 # Create only plots
 python main_application.py --config example_config.yaml --plots-only
+```
+
+## Using Streamlit
+
+### ** Run**
+```bash
+streamlit run Homepage.py
 ```
 
 ## ⚙️ **Configuration**
