@@ -54,7 +54,7 @@ python main_application.py --config example_config.yaml --plots-only
 
 ## Using Streamlit
 
-### ** Run**
+###  Run
 ```bash
 streamlit run Homepage.py
 ```
