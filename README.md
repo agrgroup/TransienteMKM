@@ -1,6 +1,6 @@
 # Transient eMKM Input File Generator and Solver
 
-This Streamlit-based application provides a graphical interface for generating input files for unsteady electrochemical microkinetic modeling (eMKM), running solvers, and visualizing reaction networks. It supports single and multiple-parameter simulations (e.g., pH and potential) and can identify rate-determining steps (RDS). Codes are also available to plot current density vs. potential relationships with and without potential sweeping.
+This application provides both a CLI and a graphical interface(Streamlit) for generating input files for unsteady electrochemical microkinetic modeling (eMKM), running solvers, and visualizing reaction networks. It supports single and multiple-parameter simulations (e.g., pH and potential) and can identify rate-determining steps (RDS). Codes are also available to plot current density vs. potential relationships with and without potential sweeping.
 
 ---
 
