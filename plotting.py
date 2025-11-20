@@ -78,12 +78,17 @@ class CoveragePlotter:
             coverage_data = {header: [] for header in headers}
 
             # Parse data lines
+            # Parse data lines with negative value handling
             for line in lines[1:]:
                 if line.strip():
                     values = list(map(float, line.strip().split()))
                     for i, header in enumerate(headers):
                         if i < len(values):
-                            coverage_data[header].append(values[i])
+                            # Set negative coverage values to zero
+                            coverage_value = max(0.0, values[i])
+                            coverage_data[header].append(coverage_value)
+                            if values[i] < 0:
+                                logger.debug(f"Negative coverage found for {header}: {values[i]} -> set to 0.0")
 
             return coverage_data
 
@@ -112,9 +117,13 @@ class CoveragePlotter:
                 final_coverages = {}
 
                 # Get final coverage for each species
+                # Get final coverage for each species
                 for species, values in coverage_data.items():
                     if values and '*' in species:  # Only adsorbates
-                        final_coverages[species] = values[-1]
+                        # Ensure final coverage is non-negative
+                        final_coverage = max(0.0, values[-1])
+                        final_coverages[species] = final_coverage
+
 
                 all_coverages[pH][V] = final_coverages
 

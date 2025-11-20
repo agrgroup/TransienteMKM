@@ -1,6 +1,7 @@
 """
-Data extraction and manipulation module for microkinetic modeling.
-Fixed all indentation errors, HTML entities, and added proper error handling.
+Data extraction with proper negative barrier handling.
+
+This version implements your assignment logic and adds safety clamping.
 """
 
 import pandas as pd
@@ -12,11 +13,10 @@ from openpyxl import load_workbook
 import xlwings as xw
 import math
 
-
 logger = logging.getLogger(__name__)
 
 class ExcelDataProcessor:
-    """Handles Excel file operations for microkinetic modeling."""
+    """Handles Excel file operations with proper barrier assignment."""
 
     def __init__(self, excel_path: str):
         """Initialize with path to Excel file."""
@@ -27,12 +27,12 @@ class ExcelDataProcessor:
     def modify_local_environment(self, pH: float, V: float, output_path: str = None) -> str:
         """
         Modify pH and V values in the Local Environment sheet.
-
+        
         Args:
             pH: New pH value
             V: New potential value
             output_path: Path for modified file (default: input_data.xlsx)
-
+        
         Returns:
             Path to modified file
         """
@@ -40,20 +40,16 @@ class ExcelDataProcessor:
             output_path = "input_data.xlsx"
 
         try:
-            # Fixed the hardcoded path issue from original code
             workbook = load_workbook(filename=str(self.excel_path))
             sheet = workbook['Local Environment']
 
             # Update pH values
             self._update_column_values(sheet, 'pH', pH)
-
-            # Update V values  
+            # Update V values
             self._update_column_values(sheet, 'V', V)
 
             workbook.save(filename=output_path)
-            #logger.info(f"Modified Excel file saved to: {output_path}")
             logger.info(f"Excel modified successfully: pH={pH}, V={V}V → {output_path}")
-
             return output_path
 
         except Exception as e:
@@ -63,7 +59,7 @@ class ExcelDataProcessor:
     def _update_column_values(self, sheet, column_name: str, new_value: float) -> None:
         """Update all values in a specific column."""
         column_index = None
-
+        
         # Find column index
         for cell in sheet[1]:
             if cell.value == column_name:
@@ -83,11 +79,11 @@ class ExcelDataProcessor:
     def read_column_data(self, sheet_name: str, column_name: str) -> List[Any]:
         """
         Read all values from a specific column using xlwings.
-
+        
         Args:
             sheet_name: Name of the Excel sheet
             column_name: Name of the column
-
+        
         Returns:
             List of values from the column
         """
@@ -101,7 +97,7 @@ class ExcelDataProcessor:
                     return []
 
                 column_index = header_row.index(column_name) + 1
-                column_values = sheet.range((2, column_index), 
+                column_values = sheet.range((2, column_index),
                                           (sheet.cells.last_cell.row, column_index)).value
 
                 # Filter out None values and convert single values to list
@@ -114,13 +110,89 @@ class ExcelDataProcessor:
             logger.error(f"Error reading column data: {e}")
             return []
 
+    def _assign_barriers_with_safety(self, Ea: List[float], Eb: List[float], 
+                                    delE_list: List[float]) -> Tuple[List[float], List[float]]:
+        """
+        Apply your assignment logic with safety clamping to prevent negative barriers.
+        
+        Assignment Logic:
+        - Ea < 0: Ea = 0, Eb = -DelG_rxn
+        - Eb < 0: Eb = 0, Ea = DelG_rxn  
+        - Both Ea,Eb = 0: Use DelG_rxn (if DelG>0: Ea=DelG, Eb=0; else: Ea=0, Eb=-DelG)
+        - Both ≥ 0: Use as extracted
+        
+        Safety: All final values are clamped to ≥ 0
+        """
+        Ea_final = Ea.copy()
+        Eb_final = Eb.copy()
+        delE_index = 0
+
+        for i in range(len(Ea_final)):
+            # Handle None/NaN by treating them as 0 for comparison
+            ea_val = Ea_final[i] if Ea_final[i] is not None and not math.isnan(Ea_final[i]) else 0
+            eb_val = Eb_final[i] if Eb_final[i] is not None and not math.isnan(Eb_final[i]) else 0
+
+            # Get DelG_rxn value if available
+            delE = None
+            if delE_index < len(delE_list):
+                delE = delE_list[delE_index]
+                if delE is not None and not math.isnan(delE):
+                    delE_index += 1
+                else:
+                    delE = None
+
+            # Apply assignment logic
+            if ea_val == 0 and eb_val == 0:
+                # Case: Both barriers are zero - use DelG_rxn
+                if delE is not None:
+                    if delE > 0:
+                        Ea_final[i] = delE
+                        Eb_final[i] = 0.0
+                        logger.debug(f"Rxn {i+1}: Both=0, DelG>0 → Ea={delE:.1f}, Eb=0")
+                    else:
+                        Ea_final[i] = 0.0
+                        Eb_final[i] = -delE
+                        logger.debug(f"Rxn {i+1}: Both=0, DelG≤0 → Ea=0, Eb={-delE:.1f}")
+                else:
+                    logger.warning(f"Rxn {i+1}: Both barriers zero but no DelG value available")
+            
+            elif ea_val < 0:
+                # Case: Ea < 0 → Ea = 0, Eb = -DelG_rxn
+                if delE is not None:
+                    Ea_final[i] = 0.0
+                    Eb_final[i] = -delE
+                    logger.debug(f"Rxn {i+1}: Ea<0 → Ea=0, Eb={-delE:.1f}")
+                else:
+                    Ea_final[i] = 0.0  # Safety fallback
+                    
+            elif eb_val < 0:
+                # Case: Eb < 0 → Eb = 0, Ea = DelG_rxn
+                if delE is not None:
+                    Ea_final[i] = delE
+                    Eb_final[i] = 0.0
+                    logger.debug(f"Rxn {i+1}: Eb<0 → Ea={delE:.1f}, Eb=0")
+                else:
+                    Eb_final[i] = 0.0  # Safety fallback
+            
+            # Final safety clamping - CRITICAL for preventing negative barriers
+            Ea_final[i] = max(0.0, Ea_final[i])
+            Eb_final[i] = max(0.0, Eb_final[i])
+            
+            # Log any clamping that occurred
+            if Ea_final[i] == 0.0 and ea_val != 0:
+                logger.warning(f"Rxn {i+1}: Ea clamped to 0 (was {ea_val:.1f})")
+            if Eb_final[i] == 0.0 and eb_val != 0:
+                logger.warning(f"Rxn {i+1}: Eb clamped to 0 (was {eb_val:.1f})")
+
+        return Ea_final, Eb_final
+
     def extract_all_data(self, modified_excel_path: str) -> Dict[str, Any]:
         """
-        Extract all necessary data from Excel file.
-
+        Extract all necessary data from Excel file with proper barrier handling.
+        
         Args:
             modified_excel_path: Path to the modified Excel file
-
+        
         Returns:
             Dictionary containing all extracted data
         """
@@ -132,41 +204,29 @@ class ExcelDataProcessor:
 
             # Extract reaction data
             reactions = df_reactions['Reactions'].tolist()
-            Ea = self.read_column_data('Reactions', 'G_f') or df_reactions['G_f'].tolist()
-            Eb = self.read_column_data('Reactions', 'G_b') or df_reactions['G_b'].tolist()
+            Ea_raw = self.read_column_data('Reactions', 'G_f') or df_reactions['G_f'].tolist()
+            Eb_raw = self.read_column_data('Reactions', 'G_b') or df_reactions['G_b'].tolist()
             delE_list = self.read_column_data('Reactions', 'DelG_rxn') or df_reactions['DelG_rxn'].tolist()
 
-            delE_index = 0
-            for i in range(len(Ea)):
-                # Handle None/NaN by treating them as 0 for comparison
-                ea_val = Ea[i] if Ea[i] is not None and not math.isnan(Ea[i]) else 0
-                eb_val = Eb[i] if Eb[i] is not None and not math.isnan(Eb[i]) else 0
-
-                if ea_val == 0 and eb_val == 0:
-                    if delE_index < len(delE_list):  # Avoid IndexError
-                        delE = delE_list[delE_index]
-                        
-                        # Only proceed if delE is a valid number
-                        if delE is not None and not math.isnan(delE):
-                            if delE > 0:
-                                Ea[i] = delE
-                            else:
-                                Eb[i] = -delE
-
-                        delE_index += 1
-                    else:
-                        # Optional: warn if we ran out of delE values
-                        print(f"Warning: No delE value for index {i}")
+            # *** APPLY YOUR ASSIGNMENT LOGIC WITH SAFETY CLAMPING ***
+            Ea, Eb = self._assign_barriers_with_safety(Ea_raw, Eb_raw, delE_list)
+            
+            # Validate no negative barriers remain
+            negative_count = sum(1 for i in range(len(Ea)) if Ea[i] < 0 or Eb[i] < 0)
+            if negative_count > 0:
+                logger.error(f"❌ {negative_count} negative barriers still present after assignment!")
+            else:
+                logger.info(f"✅ All {len(Ea)} activation barriers are non-negative")
 
             # Extract environment data
             V = df_local_env['V'].iloc[0]
-            pH = df_local_env['pH'].iloc[0] 
+            pH = df_local_env['pH'].iloc[0]
             P = df_local_env['Pressure'].iloc[0]
 
             # Extract species data
             gases = df_species['Species'].tolist()
-            concentrations = (self.read_column_data('Input-Output Species', 'Input MKMCXX') or 
-                            df_species.get('Input MKMCXX', []).tolist())
+            concentrations = (self.read_column_data('Input-Output Species', 'Input MKMCXX') or
+                             df_species.get('Input MKMCXX', []).tolist())
 
             # Parse reactions
             parsed_reactions = self._parse_reactions(reactions)
@@ -243,11 +303,11 @@ class ExcelDataProcessor:
 
         return list(adsorbates)
 
+
 def data_extract(pH: float, V: float, inp_path: str) -> Tuple:
     """
-    Main data extraction function (maintains compatibility with original interface).
-    Fixed all bugs from the original version.
-
+    Main data extraction function with proper negative barrier handling.
+    
     Returns:
         Tuple containing all extracted data in original order
     """
@@ -261,7 +321,7 @@ def data_extract(pH: float, V: float, inp_path: str) -> Tuple:
 
     return (
         data['gases'],
-        data['concentrations'], 
+        data['concentrations'],
         data['adsorbates'],
         data['activity'],
         data['Reactant1'],
