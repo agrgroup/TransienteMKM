@@ -242,18 +242,9 @@ If you use this application in your work, please cite the following:
 **Authors:** [Shivam Chaturvedi, Amar Deep Pathak, Nishant Sinha, Ananth Govind Rajan]  
 **Journal:** [Advanced Theory and Simulations]  
 **Year:** 2025  
-**DOI:** [10.1002/adts.202500799])
+**DOI:** [10.1002/adts.202500799]
 
 ```bibtex
-
-@article{chaturvedi2025transient,
-  title={Transient Microkinetic Modeling of Electrochemical Reactions: Capturing Unsteady Dynamics of CO Reduction and Oxygen Evolution},
-  author={Chaturvedi, Shivam and Pathak, Amar Deep and Sinha, Nishant and Rajan, Ananth Govind},
-  journal={ChemRxiv},
-  year={2025},
-  publisher={ChemRxiv},
-  doi={10.26434/chemrxiv-2025-rggk3}
-}
 
 @article{shivam_2025,
 title={Transient microkinetic modeling of electrochemical reactions: capturing unsteady dynamics of CO reduction and oxygen evolution},
