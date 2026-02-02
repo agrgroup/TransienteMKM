@@ -232,8 +232,6 @@ This will check:
 - Configuration loading
 - Basic functionality
 
-
-
 ---
 
 ## ✍️ Authors
@@ -247,12 +245,6 @@ Feel free to customize or extend the application.
 ## 📄 Citation & Publication
 
 If you use this application in your work, please cite the following:
-
-**Publication Title:** *Transient Microkinetic Modeling of Electrochemical Reactions: Capturing Unsteady Dynamics of CO Reduction and Oxygen Evolution*  
-**Authors:** [Shivam Chaturvedi, Amar Deep Pathak, Nishant Sinha, Ananth Govind Rajan]  
-**Journal:** [Advanced Theory and Simulations]  
-**Year:** 2025  
-**DOI:** [10.1002/adts.202500799]
 
 ```bibtex
 
