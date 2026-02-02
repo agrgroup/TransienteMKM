@@ -1,28 +1,23 @@
 # Transient eMKM Input File Generator and Solver (v1.1)
 
-This application provides both a CLI and a graphical interface (Streamlit) for generating input files for unsteady electrochemical microkinetic modeling (eMKM), running solvers, and visualizing reaction networks. It supports single and multiple-parameter simulations (e.g., pH and potential) and can identify rate-determining steps (RDS). Codes are also available to plot current density vs. potential relationships with and without potential sweeping.
+This application provides both a CLI and a graphical interface (Streamlit) for unsteady electrochemical microkinetic modeling (eMKM). It supports single and multiple-parameter simulations (e.g., pH and potential). Codes are also available to plot current density vs. potential relationships with and without potential sweeping.
 
 ---
 
-## 📁 **File Structure**
 
-```
-TransienteMKM/
-├── main_application.py      # Main entry point with CLI
-├── config.py               # Configuration management (YAML/JSON)
-├── data_extraction.py      # Excel data processing 
-├── simulation_runner.py    # Input file generation 
-├── plotting.py             # Visualization 
-├── utilities.py            # Utility functions
-├── dependencies_fixed.py   # All imports
-├── example_config.yaml     # Example configuration
-├── example_config.json     # Example configuration (JSON)
-├── input.xlsx             # Your input data
-├── test_setup.py          # Setup verification
-└── README.md              #  documentation
-```
 
 ## 🚀 **Quick Start**
+
+## Using Streamlit
+
+### 🌐 Run on Cloud
+Access the deployed application instantly:  
+👉 **[Transient eMKM Web App](https://transient-emkm.streamlit.app/)**
+
+###  Run Locally
+```bash
+streamlit run Homepage.py
+```
 
 ## Using CLI
 
@@ -52,16 +47,6 @@ python main_application.py --config example_config.yaml --simulations-only
 python main_application.py --config example_config.yaml --plots-only
 ```
 
-## Using Streamlit
-
-###  Run Locally
-```bash
-streamlit run Homepage.py
-```
-
-### 🌐 Run on Cloud
-Access the deployed application instantly:  
-👉 **[Transient eMKM Web App](https://transient-emkm.streamlit.app/)**
 
 ## ⚙️ **Configuration**
 
@@ -156,6 +141,25 @@ results/
 - `coverage_pH_*.png` - Coverage plots
 - `coverage_summary.csv` - Data summary
 - `summary_report.txt` - Execution summary
+
+## 📁 **File Structure**
+
+```
+TransienteMKM/
+├── main_application.py      # Main entry point with CLI
+├── config.py               # Configuration management (YAML/JSON)
+├── data_extraction.py      # Excel data processing 
+├── simulation_runner.py    # Input file generation 
+├── plotting.py             # Visualization 
+├── utilities.py            # Utility functions
+├── dependencies_fixed.py   # All imports
+├── example_config.yaml     # Example configuration
+├── example_config.json     # Example configuration (JSON)
+├── input.xlsx             # Your input data
+├── test_setup.py          # Setup verification
+└── README.md              #  documentation
+```
+
 
 ## 🛠 **Advanced Usage**
 
