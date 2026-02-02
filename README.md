@@ -54,10 +54,14 @@ python main_application.py --config example_config.yaml --plots-only
 
 ## Using Streamlit
 
-###  Run
+###  Run Locally
 ```bash
 streamlit run Homepage.py
 ```
+
+### 🌐 Run on Cloud
+Access the deployed application instantly:  
+👉 **[Transient eMKM Web App](https://transient-emkm.streamlit.app/)**
 
 ## ⚙️ **Configuration**
 
