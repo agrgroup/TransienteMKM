@@ -1,0 +1,25 @@
+<<<<<<< HEAD
+Number	Compound Name       	isSite?
+     1	H2O                 	0
+     2	CO                  	0
+     3	OH                  	0
+     4	H2                  	0
+     5	CO*                 	1
+     6	H2O*                	1
+     7	H*                  	1
+     8	COCO*               	1
+     9	CHO*                	1
+    10	*                   	1
+=======
+Number	Compound Name       	isSite?
+     1	H2O                 	0
+     2	CO                  	0
+     3	OH                  	0
+     4	H2                  	0
+     5	CO*                 	1
+     6	H2O*                	1
+     7	H*                  	1
+     8	COCO*               	1
+     9	CHO*                	1
+    10	*                   	1
+>>>>>>> 2e7861be448d4944733e23d44bd09ca25f692f7b

@@ -1,0 +1,17 @@
+{
+  "pH_list": [13],
+  "V_list": [0,-0.1,-0.2,-0.3,-0.4,-0.5,-0.6,-0.7,-0.8,-0.9,-1.0],
+  "temperature": 298,
+  "time": 100000.0,
+  "abstol": 1e-20,
+  "reltol": 1e-10,
+  "enable_sweep_mode": true,
+  "sweep_rate": 0.1,  
+  "use_coverage_propagation": true,
+  "input_excel_path": "input.xlsx",
+  "executable_path": "D:/mkmcxx/mkmcxx-2.15.3-windows-x64/mkmcxx_2.15.3/bin/mkmcxx.exe",
+  "pre_exponential_factor": 6.21e12,
+  "output_base_dir": "results",
+  "create_plots": true,
+  "plot_format": "png"
+}
