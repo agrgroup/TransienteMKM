@@ -1,4 +1,4 @@
-# Transient eMKM Input File Generator and Solver
+# Transient eMKM Input File Generator and Solver (v1.1)
 
 This application provides both a CLI and a graphical interface (Streamlit) for generating input files for unsteady electrochemical microkinetic modeling (eMKM), running solvers, and visualizing reaction networks. It supports single and multiple-parameter simulations (e.g., pH and potential) and can identify rate-determining steps (RDS). Codes are also available to plot current density vs. potential relationships with and without potential sweeping.
 
@@ -54,10 +54,14 @@ python main_application.py --config example_config.yaml --plots-only
 
 ## Using Streamlit
 
-###  Run
+###  Run Locally
 ```bash
 streamlit run Homepage.py
 ```
+
+### 🌐 Run on Cloud
+Access the deployed application instantly:  
+👉 **[Transient eMKM Web App](https://transient-emkm.streamlit.app/)**
 
 ## ⚙️ **Configuration**
 
@@ -75,7 +79,6 @@ abstol: 1.0e-20
 reltol: 1.0e-10
 enable_sweep_mode: true
 sweep_rate: 0.1  (V/sec)
-use_coverage_propagation: true
 
 # Paths
 input_excel_path: "input.xlsx"
@@ -123,11 +126,14 @@ python main_application.py [OPTIONS]
 Options:
   -c, --config PATH          Configuration file path
   --simulations-only         Run only simulations
-  --plots-only              Create only plots  
+  --plots-only               Create only plots
+  --sweep-mode               Enable sweep mode (with coverage propagation)
+  --sweep-rate RATE          Set sweep rate in V/s (default: 0.1)
+  --benchmark                Run performance benchmark
   --create-example-config    Create example config files
   --export-config PATH       Export current config
-  -v, --verbose             Enable verbose logging
-  -h, --help                Show help
+  -v, --verbose              Enable verbose logging
+  -h, --help                 Show help
 ``` 
 
 ## 📋 **Output**
@@ -165,9 +171,9 @@ config.to_yaml("custom_config.yaml")
 
 ### **Programmatic Usage:**
 ```python
-from main_application import MicrokineticModeling
+from main_application import OptimizedMicrokineticModeling
 
-app = MicrokineticModeling("my_config.yaml")
+app = OptimizedMicrokineticModeling("my_config.yaml")
 app.run_full_workflow()
 ```
 

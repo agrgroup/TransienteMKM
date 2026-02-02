@@ -1,13 +1,12 @@
 # Microkinetic Modeling Configuration
 
 # pH and potential ranges for parameter sweep
-pH_list: [7, 10, 13]
-V_list: [0, -0.1, -0.2, -0.3, -0.4, -0.5, -0.6, -0.7, -0.8, -0.9, -1.0]
+pH_list: [0,2,4]
+V_list: [0, -0.1, -0.2, -0.3, -0.4, -0.5, -0.6, -0.7, -0.8, -0.9, -1.0, -1.1, -1.2, -1.3, -1.4, -1.5]
 
 # Sweep mode configuration
 enable_sweep_mode: true
 sweep_rate: 0.1  # V/s (100 mV/s)
-use_coverage_propagation: true
 
 # Simulation parameters
 temperature: 298  # K
@@ -17,7 +16,7 @@ reltol: 1.0e-10   # relative tolerance
 
 # File paths
 input_excel_path: "input.xlsx"
-executable_path: ""  # UPDATE THIS PATH TO YOUR mkmcxx.exe
+executable_path: "D:/mkmcxx/mkmcxx-2.15.3-windows-x64/mkmcxx_2.15.3/bin/mkmcxx.exe"  # UPDATE THIS PATH TO YOUR mkmcxx.exe
 
 # Reaction parameters  
 pre_exponential_factor: 6.21e12

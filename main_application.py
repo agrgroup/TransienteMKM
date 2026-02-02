@@ -1,6 +1,6 @@
 """
-Main application file for microkinetic modeling workflow.
-Complete rewrite with proper structure and command-line interface.
+Optimized main application that reads Excel once at startup.
+All subsequent operations work with cached data in memory.
 """
 
 import argparse
@@ -8,27 +8,38 @@ import logging
 from pathlib import Path
 import sys
 
-# Import our modules
+# Import modules
 from dependencies_fixed import *
 from config import SolverSettings, load_config
-from data_extraction import ExcelDataProcessor, data_extract
-from simulation_runner import SimulationRunner, SimulationParameters
+from data_extraction import CachedExcelDataProcessor
+from simulation_runner import OptimizedSimulationRunner
 from plotting import CoveragePlotter, create_plots
+
+__version__ = "1.1.0"
 
 logger = logging.getLogger(__name__)
 
-class MicrokineticModeling:
-    """Main application class for microkinetic modeling workflow."""
+
+class OptimizedMicrokineticModeling:
+    """
+    Optimized application that loads Excel once and caches all data.
+    Significantly faster for parameter sweeps.
+    """
 
     def __init__(self, config_path: str = None):
         """
         Initialize application with configuration.
-
+        
         Args:
             config_path: Path to configuration file (optional)
         """
         self.config = load_config(config_path)
         self.validate_setup()
+        
+        # Load Excel data ONCE at initialization
+        logger.info(f"Loading and caching Excel data from {self.config.input_excel_path}...")
+        self.excel_processor = CachedExcelDataProcessor(self.config.input_excel_path)
+        logger.info("✅ Excel data cached successfully - no further file reads needed!")
 
     def validate_setup(self) -> None:
         """Validate configuration and setup."""
@@ -45,15 +56,15 @@ class MicrokineticModeling:
         logger.info(f"Temperature: {self.config.temperature} K")
 
     def run_simulations(self) -> None:
-        """Run all simulations for the parameter sweep."""
-        logger.info("Starting simulation parameter sweep")
-
-        # Initialize simulation runner
-        runner = SimulationRunner(self.config)
-
-        # Run parameter sweep using data extraction function
-        runner.run_parameter_sweep(data_extract)
-
+        """Run all simulations using cached Excel data."""
+        logger.info("Starting optimized simulation parameter sweep")
+        
+        # Initialize runner with cached processor
+        runner = OptimizedSimulationRunner(self.config, self.excel_processor)
+        
+        # Run parameter sweep (no Excel I/O needed)
+        runner.run_parameter_sweep()
+        
         logger.info("Simulation parameter sweep completed")
 
     def create_plots(self) -> None:
@@ -78,10 +89,10 @@ class MicrokineticModeling:
         try:
             self.run_simulations()
             self.create_plots()
-            logger.info("Full workflow completed successfully")
+            logger.info("✅ Full workflow completed successfully")
 
         except Exception as e:
-            logger.error(f"Workflow failed: {e}")
+            logger.error(f"❌ Workflow failed: {e}")
             raise
 
     def export_config(self, output_path: str) -> None:
@@ -94,6 +105,31 @@ class MicrokineticModeling:
             raise ValueError("Config file must be .yaml, .yml, or .json")
 
         logger.info(f"Configuration exported to: {output_path}")
+
+    def benchmark_performance(self) -> None:
+        """Run a performance benchmark comparing data access times."""
+        import time
+        
+        logger.info("\n" + "="*60)
+        logger.info("PERFORMANCE BENCHMARK")
+        logger.info("="*60)
+        
+        # Test cached access speed
+        pH = self.config.pH_list[0]
+        V = self.config.V_list[0]
+        
+        start = time.perf_counter()
+        for _ in range(100):
+            data = self.excel_processor.get_data_for_conditions(pH, V)
+        elapsed = time.perf_counter() - start
+        
+        logger.info(f"\n✅ Cached data access (100 iterations):")
+        logger.info(f"   Total time: {elapsed:.4f} seconds")
+        logger.info(f"   Per iteration: {elapsed/100*1000:.2f} ms")
+        logger.info(f"\n💡 Excel file opened: ZERO times")
+        logger.info(f"   All data served from memory cache")
+        logger.info("="*60 + "\n")
+
 
 def create_example_config() -> None:
     """Create an example configuration file."""
@@ -110,9 +146,12 @@ def create_example_config() -> None:
     print("  - example_config.yaml")  
     print("  - example_config.json")
 
+
 def main():
     """Main entry point with command line interface."""
-    parser = argparse.ArgumentParser(description='Microkinetic Modeling Workflow')
+    parser = argparse.ArgumentParser(
+        description='Optimized Microkinetic Modeling Workflow (Excel cached at startup)'
+    )
 
     parser.add_argument('--config', '-c', type=str, 
                        help='Path to configuration file')
@@ -126,10 +165,13 @@ def main():
                        help='Export current config to specified file')
     parser.add_argument('--verbose', '-v', action='store_true',
                        help='Enable verbose logging')
+    parser.add_argument('--benchmark', action='store_true',
+                       help='Run performance benchmark')
     
-    parser.add_argument('--sweep-mode', action='store_true', help='Enable sweep mode with coverage propagation')
-    parser.add_argument('--sweep-rate', type=float, default=0.1, help='Sweep rate in V/s (default: 0.1)')
-    parser.add_argument('--no-coverage-propagation', action='store_true', help='Disable coverage propagation in sweep mode')
+    parser.add_argument('--sweep-mode', action='store_true', 
+                       help='Enable sweep mode with coverage propagation')
+    parser.add_argument('--sweep-rate', type=float, default=0.1, 
+                       help='Sweep rate in V/s (default: 0.1)')
 
     args = parser.parse_args()
 
@@ -146,11 +188,12 @@ def main():
         return
 
     try:
-        # Initialize application
-        app = MicrokineticModeling(args.config)
+        # Initialize optimized application (Excel loaded once here)
+        logger.info(f"Initializing optimized microkinetic modeling application v{__version__}...")
+        app = OptimizedMicrokineticModeling(args.config)
 
+        # Flatten V_list if nested
         if any(isinstance(v, list) for v in app.config.V_list):
-            # flatten one level
             app.config.V_list = [float(x) for sub in app.config.V_list for x in sub]
             logger.warning(f"Flattened nested V_list → {app.config.V_list}")
 
@@ -158,12 +201,17 @@ def main():
         if args.sweep_mode:
             app.config.enable_sweep_mode = True
             app.config.sweep_rate = args.sweep_rate
-            app.config.use_coverage_propagation = not args.no_coverage_propagation
-            logger.info(f"Sweep mode enabled: {args.sweep_rate} V/s, coverage propagation: {not args.no_coverage_propagation}")
+            # app.config.use_coverage_propagation = not args.no_coverage_propagation # Removed as per user request
+            logger.info(f"Sweep mode enabled: {args.sweep_rate} V/s")
 
         # Handle config export
         if args.export_config:
             app.export_config(args.export_config)
+            return
+
+        # Run benchmark if requested
+        if args.benchmark:
+            app.benchmark_performance()
             return
 
         # Run workflow based on arguments
@@ -183,6 +231,7 @@ def main():
             import traceback
             traceback.print_exc()
         sys.exit(1)
+
 
 if __name__ == "__main__":
     main()
