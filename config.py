@@ -28,7 +28,6 @@ class SolverSettings:
     # NEW: Sweep functionality
     enable_sweep_mode: bool = False
     sweep_rate: float = 0.1  # V/s (e.g., 100 mV/s = 0.1 V/s)
-    use_coverage_propagation: bool = True  # Use coverage from previous step
 
     # File paths
     input_excel_path: str = "input.xlsx"

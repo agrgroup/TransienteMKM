@@ -1,9 +1,0 @@
-<<<<<<< HEAD
-WARNING - POSSIBLY NOT YET CONVERGED ON RUN 1: T=298; t=1e+15; AbsTol=1e-20; RelTol=1e-10
- -Dydt/y of compound: H2O* = 2.8827302016e-04
- -Dydt/y of compound: * = -1.1777947651e-04
-=======
-WARNING - POSSIBLY NOT YET CONVERGED ON RUN 1: T=298; t=1e+15; AbsTol=1e-20; RelTol=1e-10
- -Dydt/y of compound: H2O* = 2.8827302016e-04
- -Dydt/y of compound: * = -1.1777947651e-04
->>>>>>> 2e7861be448d4944733e23d44bd09ca25f692f7b
